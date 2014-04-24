@@ -96,7 +96,7 @@ def main():
 	"""
 	#Only will work if the first argument is specified, in other case will show
 	#usage of the process and will finish.
-	if isset(sys.argv[1]):
+	try:
 		file = sys.argv[1]
 		confData=configure(file)
 		filter=confData["Filter"]
@@ -108,11 +108,11 @@ def main():
 
 		twitterStream.filter(track=filter)
 	
-	else:
+	except IndexError:
 		print "Use of TweetExtractor:"
 		print "\t TwwetExtractor.py configurationFile.json"	
 	
 	
 
 if __name__ == '__main__':
-    main()
+	main()
