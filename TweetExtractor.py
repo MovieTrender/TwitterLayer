@@ -26,7 +26,8 @@ def printConfiguration(confData):
 	print("\t Access Token:\t\t"+confData["Access Token"])
 	print("\t Access Token Secret:\t"+confData["Access Token Secret"])
 	print("\t Output File:\t\t"+confData["Output File"])
-	print("\t Output Folder:\t\t"+confData["Output Folder"])
+	print("\t Output Common Folder:\t\t"+confData["Output Common Folder"])
+	print("\t Output Single Folder:\t\t"+confData["Output Single Folder"])
 	#The filter is a list of keywords, at least one must be in the tweet
 	for filter in list(confData["Filter"]):
 		print("\t Filter:\t\t"+filter)
@@ -100,10 +101,9 @@ def main():
 		file = sys.argv[1]
 		confData=configure(file)
 		filter=confData["Filter"]
-	
+
 		twitterAuth= createAuth(confData)
 		twitterListener=StreamHandler(confData)
-
 		twitterStream=tweepy.Stream(auth=twitterAuth,listener=twitterListener)
 
 		twitterStream.filter(track=filter)
@@ -111,7 +111,8 @@ def main():
 	except IndexError:
 		print "Use of TweetExtractor:"
 		print "\t TwwetExtractor.py configurationFile.json"	
-	
+	except KeyboardInterrupt:
+		exit(0)
 	
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ Handler for the Twitter streaming
 
 """
 from tweepy import StreamListener
-import json, time, sys, csv
+import json, time, sys, csv, os
 
 class StreamHandler(StreamListener):
 	"""
@@ -21,16 +21,24 @@ class StreamHandler(StreamListener):
 		
 		"""
 		
-		self.counter = 0
+		self.counter = 0		
 		self.outputFile= confData["Output File"]
-		self.outputFolder= confData["Output Folder"]
+		self.outputCommonFolder= confData["Output Common Folder"]
+		self.outputSingleFolder= confData["Output Single Folder"]
+		self.outputSingleTimeStamp=time.strftime('%Y%m%d-%H%M%S')
 		self.chunkSize=confData["Tweets per file"]
+		
+		self.commonCSV=open(self.outputCommonFolder+'//'+time.strftime('%Y%m%d-%H%M%S')+'-'+self.outputFile+'.csv', 'wb+')
         
 		#Create the file (with timestamp) for all the Tweets downloaded. 
-		self.output  = csv.writer(open(self.outputFolder+'//'+self.outputFile+'-'+time.strftime('%Y%m%d-%H%M%S')+'.csv', 'wb+'))
+		self.commonOutput  = csv.writer(self.commonCSV)
 
 		#We dont need headers in the files generated
-		self.output.writerow(["user_id","user_name","user_followers_count","user_friends_count","user_timezone","coordinates","created_at","tweet"])
+		#self.output.writerow(["user_id","user_name","user_followers_count","user_friends_count","user_timezone","created_at","tweet"])
+		
+		#Create the first timeStamp folder for the singles tweets
+		os.makedirs(self.outputSingleFolder+'//'+self.outputSingleTimeStamp)
+		
         
         
 	def on_data(self, data):
@@ -75,20 +83,32 @@ class StreamHandler(StreamListener):
 		user_followers=tweet["user"]['followers_count']
 		user_friends=tweet["user"]['friends_count']
 		user_timezone=tweet["user"]['time_zone']
-		coordinates=tweet["coordinates"]
 		created_at=tweet["created_at"]
+		tweet_id=tweet["id_str"]
 		tweet=tweet["text"].encode('UTF-8')
 		
-		self.output.writerow([user_id,user_name,user_followers,user_friends,user_timezone,coordinates,created_at,tweet])
-    	
+		#Write the fields extracted to the common file
+		self.commonOutput.writerow([tweet_id,user_id,user_name,user_followers,user_friends,user_timezone,created_at,tweet])
+		
+		#Write the tweet to a single file with the name as the tweetId and the content as the tweet
+		self.singleOutput  = open(self.outputSingleFolder+'//'+self.outputSingleTimeStamp+'//'+tweet_id, 'wb+')
+		self.singleOutput.write(tweet)
+		self.singleOutput.close()
+		
     	  
 		self.counter += 1
 
 		#If the limit for the file is reached, the file is closed and a new one is opened.
 		if self.counter >= self.chunkSize:
-			self.output.close()
-			self.output = open(self.outputFolder+'//'+self.outputFile+'-'+time.strftime('%Y%m%d-%H%M%S')+'.json', 'w')
+			#Create a new common file
+			self.commonCSV.close()
+			self.commonCSV=open(self.outputCommonFolder+'//'+time.strftime('%Y%m%d-%H%M%S')+'-'+self.outputFile+'.csv', 'wb+')
+			self.commonOutput  = csv.writer(self.commonCSV)
 			self.counter = 0
+			#Create a new timeStamp folder, and setup the new path
+			self.outputSingleTimeStamp=time.strftime('%Y%m%d-%H%M%S')
+			os.makedirs(self.outputSingleFolder+'//'+self.outputSingleTimeStamp)
+			
 
 		return
 
