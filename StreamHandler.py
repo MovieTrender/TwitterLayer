@@ -76,16 +76,18 @@ class StreamHandler(StreamListener):
 	
 		"""
     
-		tweet = json.loads(status)
+		tweetJson = json.loads(status)
     	
-		user_id=tweet["user"]['id']
-		user_name=tweet["user"]['name'].encode('UTF-8')
-		user_followers=tweet["user"]['followers_count']
-		user_friends=tweet["user"]['friends_count']
-		user_timezone=tweet["user"]['time_zone']
-		created_at=tweet["created_at"]
-		tweet_id=tweet["id_str"]
-		tweet=tweet["text"].encode('UTF-8')
+		user_id=tweetJson["user"]['id']
+		user_name=tweetJson["user"]['name'].encode('UTF-8')
+		user_followers=tweetJson["user"]['followers_count']
+		user_friends=tweetJson["user"]['friends_count']
+		user_timezone=tweetJson["user"]['time_zone']
+		user_language=tweetJson["user"]["lang"]
+		created_at=tweetJson["created_at"]
+		tweet_id=tweetJson["id_str"]
+		tweet=tweetJson["text"].encode('UTF-8')
+
 		
 		#Write the fields extracted to the common file
 		self.commonOutput.writerow([tweet_id,user_id,user_name,user_followers,user_friends,user_timezone,created_at,tweet])
