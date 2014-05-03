@@ -20,24 +20,30 @@ class StreamHandler(StreamListener):
 			confData(json): Json object with all the configuration values
 		
 		"""
+		#Initialize variables with configuration values
+		#and setup local variables:
+		#    self.CommonOutput. Related with the common file
+		#    self.SingleOutput. Related with the single tweet files
 		
 		self.counter = 0		
 		self.outputFile= confData["Output File"]
 		self.outputCommonFolder= confData["Output Common Folder"]
 		self.outputSingleFolder= confData["Output Single Folder"]
-		self.outputSingleTimeStamp=time.strftime('%Y%m%d-%H%M%S')
 		self.chunkSize=confData["Tweets per file"]
 		
-		self.commonCSV=open(self.outputCommonFolder+'//'+time.strftime('%Y%m%d-%H%M%S')+'-'+self.outputFile+'.csv', 'wb+')
+		self.commonPath=self.outputCommonFolder+'//'+time.strftime('%Y%m%d-%H%M%S')+'-'+self.outputFile
+		self.commonCSV=open(self.commonPath, 'wb+')
         
 		#Create the file (with timestamp) for all the Tweets downloaded. 
 		self.commonOutput  = csv.writer(self.commonCSV)
 
 		#We dont need headers in the files generated
-		#self.output.writerow(["user_id","user_name","user_followers_count","user_friends_count","user_timezone","created_at","tweet"])
+		#self.output.writerow(["tweet_id","user_id","user_name","user_followers_count","user_friends_count","user_timezone","created_at","tweet"])
 		
 		#Create the first timeStamp folder for the singles tweets
-		os.makedirs(self.outputSingleFolder+'//'+self.outputSingleTimeStamp)
+		self.outputSingleTimeStamp=time.strftime('%Y%m%d-%H%M%S')
+		self.outputSinglePath=self.outputSingleFolder+'//'+self.outputSingleTimeStamp
+		os.makedirs(self.outputSinglePath)
 		
         
         
@@ -75,7 +81,8 @@ class StreamHandler(StreamListener):
 			status(str): Tweet received by Twitter Streaming.
 	
 		"""
-    
+		
+		#Get Tweet information and store in variables
 		tweetJson = json.loads(status)
     	
 		user_id=tweetJson["user"]['id']
@@ -102,14 +109,25 @@ class StreamHandler(StreamListener):
 
 		#If the limit for the file is reached, the file is closed and a new one is opened.
 		if self.counter >= self.chunkSize:
-			#Create a new common file
+			
+			#Close the current file and rename with ACK (this file is closed, can be processed)
 			self.commonCSV.close()
-			self.commonCSV=open(self.outputCommonFolder+'//'+time.strftime('%Y%m%d-%H%M%S')+'-'+self.outputFile+'.csv', 'wb+')
+			os.rename(self.commonPath,self.commonPath+'-ACK'+'.csv')
+			
+			#Create a new common file
+			self.commonPath=self.outputCommonFolder+'//'+time.strftime('%Y%m%d-%H%M%S')+'-'+self.outputFile
+			self.commonCSV=open(self.commonPath, 'wb+')
 			self.commonOutput  = csv.writer(self.commonCSV)
 			self.counter = 0
+			
+			#Close current folder adding ACK (this folder is closed, can be processed)
+			os.rename(self.outputSinglePath,self.outputSinglePath+'-ACK')
+			
+			
 			#Create a new timeStamp folder, and setup the new path
 			self.outputSingleTimeStamp=time.strftime('%Y%m%d-%H%M%S')
-			os.makedirs(self.outputSingleFolder+'//'+self.outputSingleTimeStamp)
+			self.outputSinglePath=self.outputSingleFolder+'//'+self.outputSingleTimeStamp
+			os.makedirs(self.outputSinglePath)
 			
 
 		return
