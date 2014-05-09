@@ -1,3 +1,5 @@
+## Read [Project Documentation](https://github.com/MovieTrender/Documentation "Project Documentation")
+
 ##Twitter Layer
 
 This is the first layer of [MovieTrender](https://github.com/MovieTrender "MovieTrender").
