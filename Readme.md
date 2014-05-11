@@ -2,8 +2,6 @@
 
 ##Twitter Layer
 
-This is the first layer of [MovieTrender](https://github.com/MovieTrender "MovieTrender").
-
 Downloads tweets from Twitter and store them in the local folder structure.
 
 Stores tweets in two ways:
