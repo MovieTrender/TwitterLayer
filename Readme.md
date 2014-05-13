@@ -71,7 +71,7 @@ The local folder structure used by the process is the following:
 /Root/Classify:
 	Folder with single tweet files.
 
-Once that one file or folder (files for common tweet files, folder for single tweets( is ready to be processed in the next step the flag ACK is added to the name.
+Once that one file or folder (files for common tweet files, folder for single tweets) is ready to be processed in the next step the flag ACK is added to the name.
 
 
 
