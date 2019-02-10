@@ -1,6 +1,6 @@
 ## Read [Project Documentation](https://github.com/MovieTrender/Documentation "Project Documentation")
 
-##Twitter Layer
+## Twitter Layer
 
 Downloads tweets from Twitter and store them in the local folder structure.
 
@@ -15,12 +15,12 @@ The process was created using [Python](https://www.python.org/ "Python") and [Tw
 
 More info about Twitter api in [Twitter](https://dev.twitter.com "Twitter")
 
-###Use
+### Use
 Execution
 
 	python TweetExtractor.py Configuration/Configuration.json
 
-###Configuration
+### Configuration
 The configuration file is a json file with all the parameters needed for the execution of the process:
 
 Parameters in configuration file:
