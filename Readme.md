@@ -58,7 +58,7 @@ Parameters in configuration file:
   }
 
 
-###Local Folder Structure
+### Local Folder Structure
 
 The local folder structure used by the process is the following:
 
